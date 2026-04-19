@@ -1,8 +1,21 @@
 @import "tailwindcss";
 
+/* Light theme: white base, black + grey accents */
 :root {
   --background: #ffffff;
-  --foreground: #171717;
+  --foreground: #0a0a0a;
+  --muted: #64748b;
+  --surface: #f8fafc;
+  --surface-2: #f1f5f9;
+  --border: rgba(15, 23, 42, 0.1);
+  --accent: #0a0a0a;
+  --accent-dim: #404040;
+  --accent-muted: rgba(10, 10, 10, 0.06);
+  --on-accent: #ffffff;
+  /* Secondary emphasis (neutral grey, not purple) */
+  --violet: #52525b;
+  --violet-muted: rgba(82, 82, 91, 0.1);
+  --glow: rgba(10, 10, 10, 0.12);
 }
 
 @theme inline {
@@ -12,15 +25,101 @@
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  scroll-behavior: smooth;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-geist-sans), system-ui, sans-serif;
+}
+
+/* Subtle grey mesh on white */
+.mesh-bg {
+  background-color: var(--background);
+  background-image:
+    radial-gradient(ellipse 90% 60% at 50% -15%, rgba(15, 23, 42, 0.04), transparent 55%),
+    radial-gradient(ellipse 50% 40% at 100% 0%, rgba(82, 82, 91, 0.05), transparent 50%),
+    radial-gradient(ellipse 45% 35% at 0% 100%, rgba(15, 23, 42, 0.03), transparent 50%);
+}
+
+.glass {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--border);
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+}
+
+.card-hover {
+  transition:
+    transform 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.35s ease,
+    border-color 0.35s ease;
+}
+
+.card-hover:hover {
+  transform: translateY(-3px);
+  box-shadow:
+    0 16px 32px -12px rgba(15, 23, 42, 0.12),
+    0 0 0 1px rgba(15, 23, 42, 0.06);
+  border-color: rgba(15, 23, 42, 0.14);
+}
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.shimmer {
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(15, 23, 42, 0.04) 50%,
+    transparent 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 2.5s ease infinite;
+}
+
+::selection {
+  background: rgba(10, 10, 10, 0.15);
+  color: var(--foreground);
+}
+
+/* Horizontal scroll for data tables on small screens */
+.table-responsive {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  margin-left: -1rem;
+  margin-right: -1rem;
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+@media (min-width: 640px) {
+  .table-responsive {
+    margin-left: 0;
+    margin-right: 0;
+    padding-left: 0;
+    padding-right: 0;
+  }
 }

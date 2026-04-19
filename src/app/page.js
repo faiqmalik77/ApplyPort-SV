@@ -1,9 +1,15 @@
-import Image from "next/image";
+import Hero from "@/components/home/Hero";
+import FeatureGrid from "@/components/home/FeatureGrid";
+import ProcessSection from "@/components/home/ProcessSection";
+import CtaSection from "@/components/home/CtaSection";
 
 export default function Home() {
   return (
-    <div className="">
-      Hello World
-    </div>
+    <>
+      <Hero />
+      <FeatureGrid />
+      <ProcessSection />
+      <CtaSection />
+    </>
   );
 }
