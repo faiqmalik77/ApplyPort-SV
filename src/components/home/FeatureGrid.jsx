@@ -30,7 +30,7 @@ const features = [
     icon: LineChart,
     title: "Status tracking",
     desc: "Pending, accepted, or rejected — see every application in one place.",
-    href: "/tracking",
+    href: "/applications",
   },
   {
     icon: PenLine,
@@ -74,7 +74,7 @@ export default function FeatureGrid() {
             <span className="text-[var(--foreground)]">one</span> workspace
           </h2>
           <p className="mx-auto mt-4 max-w-2xl text-center text-[var(--muted)]">
-            Authentication, program search, applications, tracking, SOP support,
+            Authentication, program search, applications, SOP support,
             mock interviews, guidance, partner schools, offers, and admin tools —
             in one place.
           </p>

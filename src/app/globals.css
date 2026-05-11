@@ -1,21 +1,21 @@
 @import "tailwindcss";
 
-/* Light theme: white base, black + grey accents */
+/* Light theme: white base with blue navigation accents */
 :root {
   --background: #ffffff;
-  --foreground: #0a0a0a;
-  --muted: #64748b;
-  --surface: #f8fafc;
-  --surface-2: #f1f5f9;
-  --border: rgba(15, 23, 42, 0.1);
-  --accent: #0a0a0a;
-  --accent-dim: #404040;
-  --accent-muted: rgba(10, 10, 10, 0.06);
+  --foreground: #10213b;
+  --muted: #4f6484;
+  --surface: #f4f8ff;
+  --surface-2: #eaf1ff;
+  --border: rgba(27, 79, 134, 0.18);
+  --accent: #2f75bc;
+  --accent-dim: #1f5e9a;
+  --accent-muted: rgba(47, 117, 188, 0.12);
   --on-accent: #ffffff;
-  /* Secondary emphasis (neutral grey, not purple) */
-  --violet: #52525b;
-  --violet-muted: rgba(82, 82, 91, 0.1);
-  --glow: rgba(10, 10, 10, 0.12);
+  /* Secondary emphasis */
+  --violet: #295f9d;
+  --violet-muted: rgba(41, 95, 157, 0.12);
+  --glow: rgba(47, 117, 188, 0.2);
 }
 
 @theme inline {
@@ -35,13 +35,13 @@ body {
   font-family: var(--font-geist-sans), system-ui, sans-serif;
 }
 
-/* Subtle grey mesh on white */
+/* Subtle blue mesh on white */
 .mesh-bg {
   background-color: var(--background);
   background-image:
-    radial-gradient(ellipse 90% 60% at 50% -15%, rgba(15, 23, 42, 0.04), transparent 55%),
-    radial-gradient(ellipse 50% 40% at 100% 0%, rgba(82, 82, 91, 0.05), transparent 50%),
-    radial-gradient(ellipse 45% 35% at 0% 100%, rgba(15, 23, 42, 0.03), transparent 50%);
+    radial-gradient(ellipse 90% 60% at 50% -15%, rgba(31, 94, 154, 0.08), transparent 55%),
+    radial-gradient(ellipse 50% 40% at 100% 0%, rgba(47, 117, 188, 0.1), transparent 50%),
+    radial-gradient(ellipse 45% 35% at 0% 100%, rgba(27, 79, 134, 0.06), transparent 50%);
 }
 
 .glass {

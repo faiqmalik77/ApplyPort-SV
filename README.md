@@ -1,36 +1,48 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+## ApplyPort-SV
 
-## Getting Started
+Next.js full-stack project where frontend and backend both live in the same app.
 
-First, run the development server:
+## Setup
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+1. Install dependencies:
+   - `npm install`
+2. Create environment file:
+   - Copy `.env.example` to `.env.local`
+3. Add your values in `.env.local`:
+   - `MONGODB_URI`
+   - `MONGODB_DB`
+   - `JWT_SECRET`
+   - `ADMIN_EMAILS` (comma-separated admin emails for role guard)
+   - `ADMIN_SEED_NAME`
+   - `ADMIN_SEED_EMAIL`
+   - `ADMIN_SEED_PASSWORD`
+4. Start dev server:
+   - `npm run dev`
+5. Seed admin user:
+   - `npm run seed:admin`
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Backend Modules Added
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+- Auth APIs:
+  - `POST /api/auth/register`
+  - `POST /api/auth/login`
+  - `GET /api/auth/me`
+  - `POST /api/auth/logout`
+- Programs API:
+  - `GET /api/programs`
+- Applications APIs:
+  - `GET /api/applications`
+  - `POST /api/applications`
+  - `GET /api/applications/:id`
+  - `PATCH /api/applications/:id`
+- Admin APIs (protected):
+  - `GET /api/admin/applications`
+  - `PATCH /api/admin/applications/:id`
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Notes
 
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- Register/Login forms now call backend APIs.
+- Application wizard now submits to backend.
+- Student/Admin application views can read data from MongoDB and fallback to demo data if DB is unavailable.
+- `/admin` routes are protected with server-side role guard.
+- `npm run seed:admin` creates/updates an admin user directly in MongoDB.

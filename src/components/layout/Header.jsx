@@ -1,42 +1,37 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import Image from "next/image";
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X, Sparkles } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import { mainNav } from "@/lib/nav";
-
-function NavLink({ href, label, onClick }) {
-  const pathname = usePathname();
-  const active = pathname === href || pathname.startsWith(href + "/");
-  return (
-    <Link
-      href={href}
-      onClick={onClick}
-      className={`relative whitespace-nowrap px-2 py-2 text-xs font-medium transition-colors sm:px-2.5 lg:px-3 ${
-        active
-          ? "text-[var(--accent)]"
-          : "text-[var(--muted)] hover:text-[var(--foreground)]"
-      }`}
-    >
-      {label}
-      {active && (
-        <span className="absolute inset-0 -z-10 rounded-lg bg-[var(--accent-muted)] ring-1 ring-[var(--foreground)]/10" />
-      )}
-    </Link>
-  );
-}
 
 export default function Header() {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [user, setUser] = useState(null);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 8);
     window.addEventListener("scroll", onScroll);
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
+
+  useEffect(() => {
+    fetch("/api/auth/me")
+      .then((res) => res.json())
+      .then((data) => setUser(data?.user || null))
+      .catch(() => setUser(null));
+  }, []);
+
+  const logout = async () => {
+    try {
+      await fetch("/api/auth/logout", { method: "POST" });
+    } finally {
+      window.location.href = "/auth/login";
+    }
+  };
 
   const close = () => setOpen(false);
 
@@ -54,8 +49,17 @@ export default function Header() {
           className="group flex min-w-0 shrink items-center gap-2"
           onClick={close}
         >
-          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-[var(--accent)] to-[var(--accent-dim)] text-[var(--on-accent)] shadow-md sm:h-10 sm:w-10">
-            <Sparkles className="h-4 w-4 sm:h-5 sm:w-5" aria-hidden />
+          <span className="relative flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-[var(--border)] bg-white shadow-sm">
+            <Image
+              src="/logo.png"
+              alt="ApplyPort-SV logo"
+              width={44}
+              height={44}
+              quality={100}
+              unoptimized
+              className="h-10 w-10 object-contain"
+              priority
+            />
           </span>
           <span className="truncate text-sm font-semibold tracking-tight text-[var(--foreground)] sm:text-base">
             ApplyPort
@@ -63,31 +67,45 @@ export default function Header() {
           </span>
         </Link>
 
-        <nav className="hidden max-w-xl flex-1 flex-wrap items-center justify-center gap-0.5 lg:flex xl:max-w-4xl">
-          {mainNav.map((item) => (
-            <NavLink key={item.href} href={item.href} label={item.label} />
-          ))}
-        </nav>
-
         <div className="hidden shrink-0 items-center gap-1.5 sm:flex sm:gap-2">
-          <Link
-            href="/auth/login"
-            className="rounded-lg px-3 py-2 text-xs font-medium text-[var(--muted)] transition hover:text-[var(--foreground)] sm:text-sm"
-          >
-            Log in
-          </Link>
-          <Link
-            href="/auth/register"
-            className="rounded-lg bg-gradient-to-r from-[var(--accent)] to-[var(--accent-dim)] px-3 py-2 text-xs font-semibold text-[var(--on-accent)] shadow-md transition hover:opacity-95 sm:px-4 sm:text-sm"
-          >
-            Get started
-          </Link>
+          {user ? (
+            <button
+              type="button"
+              onClick={logout}
+              className="rounded-lg px-3 py-2 text-xs font-medium text-[var(--muted)] transition hover:text-[var(--foreground)] sm:text-sm"
+            >
+              Log out
+            </button>
+          ) : (
+            <>
+              <Link
+                href="/auth/login"
+                className="rounded-lg px-3 py-2 text-xs font-medium text-[var(--muted)] transition hover:text-[var(--foreground)] sm:text-sm"
+              >
+                Log in
+              </Link>
+              <Link
+                href="/auth/register"
+                className="rounded-lg bg-gradient-to-r from-[var(--accent)] to-[var(--accent-dim)] px-3 py-2 text-xs font-semibold text-[var(--on-accent)] shadow-md transition hover:opacity-95 sm:px-4 sm:text-sm"
+              >
+                Get started
+              </Link>
+            </>
+          )}
           <Link
             href="/dashboard"
             className="hidden rounded-lg border border-[var(--border)] px-3 py-2 text-xs font-medium text-[var(--foreground)] transition hover:bg-[var(--surface)] md:inline-block sm:text-sm"
           >
             Dashboard
           </Link>
+          {user?.role === "admin" && (
+            <Link
+              href="/admin"
+              className="hidden rounded-lg border border-[var(--border)] px-3 py-2 text-xs font-medium text-[var(--foreground)] transition hover:bg-[var(--surface)] md:inline-block sm:text-sm"
+            >
+              Admin
+            </Link>
+          )}
         </div>
 
         <button
@@ -122,20 +140,35 @@ export default function Header() {
                 </Link>
               ))}
               <hr className="my-2 border-[var(--border)]" />
-              <Link
-                href="/auth/login"
-                onClick={close}
-                className="rounded-lg px-3 py-3 text-sm font-medium text-[var(--muted)]"
-              >
-                Log in
-              </Link>
-              <Link
-                href="/auth/register"
-                onClick={close}
-                className="rounded-lg bg-[var(--accent)] px-3 py-3 text-center text-sm font-semibold text-[var(--on-accent)]"
-              >
-                Get started
-              </Link>
+              {user ? (
+                <button
+                  type="button"
+                  onClick={() => {
+                    close();
+                    logout();
+                  }}
+                  className="rounded-lg px-3 py-3 text-left text-sm font-medium text-[var(--muted)]"
+                >
+                  Log out
+                </button>
+              ) : (
+                <>
+                  <Link
+                    href="/auth/login"
+                    onClick={close}
+                    className="rounded-lg px-3 py-3 text-sm font-medium text-[var(--muted)]"
+                  >
+                    Log in
+                  </Link>
+                  <Link
+                    href="/auth/register"
+                    onClick={close}
+                    className="rounded-lg bg-[var(--accent)] px-3 py-3 text-center text-sm font-semibold text-[var(--on-accent)]"
+                  >
+                    Get started
+                  </Link>
+                </>
+              )}
               <Link
                 href="/dashboard"
                 onClick={close}
@@ -143,13 +176,15 @@ export default function Header() {
               >
                 Dashboard
               </Link>
-              <Link
-                href="/admin"
-                onClick={close}
-                className="rounded-lg px-3 py-3 text-sm text-[var(--muted)]"
-              >
-                Admin
-              </Link>
+              {user?.role === "admin" && (
+                <Link
+                  href="/admin"
+                  onClick={close}
+                  className="rounded-lg px-3 py-3 text-sm text-[var(--muted)]"
+                >
+                  Admin
+                </Link>
+              )}
             </div>
           </motion.div>
         )}

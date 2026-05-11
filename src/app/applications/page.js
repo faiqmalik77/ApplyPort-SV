@@ -1,12 +1,13 @@
 import Link from "next/link";
 import { PlusCircle } from "lucide-react";
 import PageShell from "@/components/layout/PageShell";
+import { listApplications } from "@/lib/server/applications";
 
 export const metadata = {
   title: "Your applications",
 };
 
-const rows = [
+const DEMO_ROWS = [
   {
     id: "app-1024",
     program: "MSc Data Science",
@@ -25,18 +26,29 @@ const rows = [
     id: "app-1020",
     program: "BSc CS",
     uni: "Aurora College",
-    status: "Accepted",
+    status: "Offer letter",
     updated: "Mar 28, 2026",
   },
 ];
 
 const statusStyle = {
-  "Under review": "bg-neutral-200 text-neutral-900",
-  "Pending documents": "bg-neutral-100 text-neutral-700 ring-1 ring-neutral-200",
-  Accepted: "bg-neutral-900 text-[var(--on-accent)]",
+  "Pending documents": "bg-amber-100 text-amber-900 ring-1 ring-amber-200",
+  "Under review": "bg-sky-100 text-sky-900 ring-1 ring-sky-200",
+  "University requirement pending": "bg-violet-100 text-violet-900 ring-1 ring-violet-200",
+  Submitted: "bg-neutral-200 text-neutral-900 ring-1 ring-neutral-300",
+  "Offer letter": "bg-emerald-100 text-emerald-900 ring-1 ring-emerald-200",
+  Rejected: "bg-rose-100 text-rose-900 ring-1 ring-rose-200",
 };
 
-export default function ApplicationsPage() {
+export default async function ApplicationsPage() {
+  let rows = DEMO_ROWS;
+  try {
+    const dbRows = await listApplications();
+    if (dbRows.length > 0) rows = dbRows;
+  } catch {
+    // Fallback to demo rows when DB is not connected.
+  }
+
   return (
     <PageShell
       title="Your applications"

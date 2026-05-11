@@ -1,0 +1,21 @@
+Research Proposal — Template (replace bracketed hints)
+
+1. Title & summary
+   - Working title and 2–3 sentences on the problem and intended contribution.
+
+2. Background & literature
+   - Context, gaps in existing work, and how your idea fits.
+
+3. Objectives & questions
+   - Clear aims or research questions you will address.
+
+4. Methodology
+   - Data, methods, experiments, or theoretical approach; feasibility.
+
+5. Expected outcomes
+   - What success looks like and how it advances the field or practice.
+
+6. Timeline & resources (if required)
+   - Major phases and any equipment, data, or supervision needs.
+
+Align terminology with the host department and cite key sources where appropriate.

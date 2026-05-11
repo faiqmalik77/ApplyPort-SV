@@ -1,11 +1,12 @@
 import Link from "next/link";
-import { Sparkles, Mail, MapPin } from "lucide-react";
+import Image from "next/image";
+import { Mail, MapPin } from "lucide-react";
 
 const footerLinks = {
   Product: [
     { href: "/programs", label: "Search programs" },
     { href: "/applications/new", label: "New application" },
-    { href: "/tracking", label: "Application tracking" },
+    { href: "/applications", label: "Your applications" },
     { href: "/offers", label: "Scholarships & offers" },
   ],
   Resources: [
@@ -21,9 +22,13 @@ const footerLinks = {
   ],
 };
 
-export default function Footer() {
+export default function Footer({ inset = false }) {
   return (
-    <footer className="mt-auto border-t border-[var(--border)] bg-[var(--surface)]">
+    <footer
+      className={`mt-auto border-t border-[var(--border)] bg-[var(--surface)] ${
+        inset ? "lg:pl-[312px]" : ""
+      }`}
+    >
       <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 sm:py-14 lg:px-8">
         <div className="grid grid-cols-1 gap-10 sm:grid-cols-2 lg:grid-cols-5 lg:gap-8">
           <div className="text-center sm:col-span-2 sm:text-left lg:col-span-2">
@@ -31,8 +36,16 @@ export default function Footer() {
               href="/"
               className="inline-flex items-center justify-center gap-2 sm:justify-start"
             >
-              <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-[var(--accent)] to-[var(--accent-dim)] text-[var(--on-accent)]">
-                <Sparkles className="h-5 w-5" />
+              <span className="relative flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-[var(--border)] bg-white shadow-sm">
+                <Image
+                  src="/logo.png"
+                  alt="ApplyPort-SV logo"
+                  width={40}
+                  height={40}
+                  quality={100}
+                  unoptimized
+                  className="h-9 w-9 object-contain"
+                />
               </span>
               <span className="text-lg font-semibold">
                 ApplyPort<span className="text-[var(--muted)]">-SV</span>

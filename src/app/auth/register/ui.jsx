@@ -3,18 +3,71 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 
+const emailOk = (v) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.trim());
+
 export default function RegisterForm() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [errors, setErrors] = useState({});
+  const [serverMessage, setServerMessage] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const fieldClass = (key) =>
+    `mt-2 w-full rounded-xl border bg-[var(--background)]/80 px-4 py-3 text-[var(--foreground)] outline-none transition focus:ring-2 ${
+      errors[key]
+        ? "border-[var(--accent)]/50 focus:border-[var(--accent)]/60 focus:ring-[var(--accent)]/20"
+        : "border-[var(--border)] focus:border-[var(--accent)]/50 focus:ring-[var(--accent)]/20"
+    }`;
 
   return (
     <form
       className="mt-8 space-y-5"
       onSubmit={(e) => {
         e.preventDefault();
+        setServerMessage("");
+        const next = {};
+        if (name.trim().length < 2)
+          next.name = "Please enter your full name (at least 2 characters).";
+        if (!email.trim()) next.email = "Email is required.";
+        else if (!emailOk(email)) next.email = "Enter a valid email address.";
+        if (!password) next.password = "Password is required.";
+        else if (password.length < 8)
+          next.password = "Use at least 8 characters.";
+        else if (!/[A-Za-z]/.test(password) || !/\d/.test(password))
+          next.password = "Include at least one letter and one number.";
+        setErrors(next);
+        if (Object.keys(next).length > 0) return;
+        setLoading(true);
+        fetch("/api/auth/register", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ name, email, password }),
+        })
+          .then(async (res) => {
+            const data = await res.json();
+            if (!res.ok) throw new Error(data?.error || "Registration failed.");
+            setServerMessage("Account created successfully. You are now logged in.");
+            setName("");
+            setEmail("");
+            setPassword("");
+            setErrors({});
+          })
+          .catch((error) => {
+            setServerMessage(error.message || "Unable to create account.");
+          })
+          .finally(() => setLoading(false));
       }}
+      noValidate
     >
+      {Object.keys(errors).length > 0 && (
+        <p
+          className="rounded-xl border border-[var(--accent)]/25 bg-[var(--accent)]/8 px-4 py-3 text-sm text-[var(--accent-dim)]"
+          role="alert"
+        >
+          Please fix the fields below.
+        </p>
+      )}
       <div>
         <label htmlFor="name" className="block text-sm font-medium text-[var(--muted)]">
           Full name
@@ -22,9 +75,20 @@ export default function RegisterForm() {
         <input
           id="name"
           value={name}
-          onChange={(e) => setName(e.target.value)}
-          className="mt-2 w-full rounded-xl border border-[var(--border)] bg-[var(--background)]/80 px-4 py-3 text-[var(--foreground)] outline-none transition focus:border-[var(--accent)]/50 focus:ring-2 focus:ring-[var(--accent)]/20"
+          onChange={(e) => {
+            setName(e.target.value);
+            if (errors.name) setErrors((o) => ({ ...o, name: undefined }));
+          }}
+          className={fieldClass("name")}
+          autoComplete="name"
+          aria-invalid={Boolean(errors.name)}
+          aria-describedby={errors.name ? "name-error" : undefined}
         />
+        {errors.name && (
+          <p id="name-error" className="mt-1 text-xs text-[var(--accent-dim)]">
+            {errors.name}
+          </p>
+        )}
       </div>
       <div>
         <label htmlFor="email" className="block text-sm font-medium text-[var(--muted)]">
@@ -35,9 +99,19 @@ export default function RegisterForm() {
           type="email"
           autoComplete="email"
           value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          className="mt-2 w-full rounded-xl border border-[var(--border)] bg-[var(--background)]/80 px-4 py-3 text-[var(--foreground)] outline-none transition focus:border-[var(--accent)]/50 focus:ring-2 focus:ring-[var(--accent)]/20"
+          onChange={(e) => {
+            setEmail(e.target.value);
+            if (errors.email) setErrors((o) => ({ ...o, email: undefined }));
+          }}
+          className={fieldClass("email")}
+          aria-invalid={Boolean(errors.email)}
+          aria-describedby={errors.email ? "reg-email-error" : undefined}
         />
+        {errors.email && (
+          <p id="reg-email-error" className="mt-1 text-xs text-[var(--accent-dim)]">
+            {errors.email}
+          </p>
+        )}
       </div>
       <div>
         <label
@@ -51,21 +125,38 @@ export default function RegisterForm() {
           type="password"
           autoComplete="new-password"
           value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          className="mt-2 w-full rounded-xl border border-[var(--border)] bg-[var(--background)]/80 px-4 py-3 text-[var(--foreground)] outline-none transition focus:border-[var(--accent)]/50 focus:ring-2 focus:ring-[var(--accent)]/20"
+          onChange={(e) => {
+            setPassword(e.target.value);
+            if (errors.password) setErrors((o) => ({ ...o, password: undefined }));
+          }}
+          className={fieldClass("password")}
+          aria-invalid={Boolean(errors.password)}
+          aria-describedby={errors.password ? "reg-password-error" : undefined}
         />
-        <p className="mt-1 text-xs text-[var(--muted)]">
-          Passwords are stored securely using industry-standard hashing.
-        </p>
+        {errors.password ? (
+          <p id="reg-password-error" className="mt-1 text-xs text-[var(--accent-dim)]">
+            {errors.password}
+          </p>
+        ) : (
+          <p className="mt-1 text-xs text-[var(--muted)]">
+            At least 8 characters, with one letter and one number (demo validation only).
+          </p>
+        )}
       </div>
       <motion.button
         type="submit"
         whileHover={{ scale: 1.01 }}
         whileTap={{ scale: 0.99 }}
+        disabled={loading}
         className="w-full rounded-xl bg-gradient-to-r from-[var(--accent-dim)] to-[var(--accent)] py-3.5 text-base font-semibold text-[var(--on-accent)] shadow-lg shadow-black/10"
       >
-        Create account
+        {loading ? "Creating account..." : "Create account"}
       </motion.button>
+      {serverMessage && (
+        <p className="rounded-xl border border-[var(--border)] bg-[var(--surface)]/60 px-4 py-3 text-sm text-[var(--foreground)]">
+          {serverMessage}
+        </p>
+      )}
     </form>
   );
 }
